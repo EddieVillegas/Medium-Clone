@@ -3,9 +3,12 @@ import { CreateUserDto } from "./dto/createUser.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./user.entity";
 import { Repository } from "typeorm";
-import {sign} from "jsonwebtoken"
+import { sign } from "jsonwebtoken"
 import { JWT_SECRET } from "@app/config/config";
 import { UserResponse } from "@app/types/userResponse.interface";
+import { LoginUserDto } from "./dto/loginUser.dto";
+import { compare } from "bcrypt";
+import { find } from "rxjs";
 
 @Injectable()
 export class UserService{
@@ -37,7 +40,24 @@ export class UserService{
         return await this.userRepo.save(newUser)
     }
 
-    generateJwt(user: UserEntity): string {
+    async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+        const findedUser = await this.userRepo.findOne({
+            where: {
+                email: loginUserDto.email
+            },
+            select: ['id', "username", "email", "bio", "image", "password"]
+        })
+        if(!findedUser) throw new HttpException('User not found', HttpStatus.UNPROCESSABLE_ENTITY)
+        const isPasswordCorrect = await compare(loginUserDto.password, findedUser.password)
+        if(!isPasswordCorrect) 
+            throw new HttpException(
+                'Bad password or email',
+                HttpStatus.UNPROCESSABLE_ENTITY
+            )
+        return findedUser
+    }
+
+    private generateJwt(user: UserEntity): string {
         return sign({
             id: user.id,
             email: user.email,
@@ -46,9 +66,10 @@ export class UserService{
     }
 
     buildUserResponse(user: UserEntity): UserResponse {
+        const {password, ...res} = user
         return {
             user: {
-                ...user,
+                ...res,
                 token: this.generateJwt(user)
             }
         }
