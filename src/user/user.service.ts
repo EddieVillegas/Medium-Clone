@@ -5,7 +5,7 @@ import { UserEntity } from "./user.entity";
 import { Repository } from "typeorm";
 import { sign } from "jsonwebtoken"
 import { JWT_SECRET } from "@app/config/config";
-import { UserResponse } from "@app/types/userResponse.interface";
+import { UserResponse } from "@app/user/types/userResponse.interface";
 import { LoginUserDto } from "./dto/loginUser.dto";
 import { compare } from "bcrypt";
 import { find } from "rxjs";
@@ -38,6 +38,16 @@ export class UserService{
         const newUser = new UserEntity()
         Object.assign(newUser, createUserDto)
         return await this.userRepo.save(newUser)
+    }
+
+    async findById(
+        id:number
+    ): Promise<UserEntity|null> {
+        return await this.userRepo.findOne({
+            where: {
+                id
+            }
+        })
     }
 
     async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
