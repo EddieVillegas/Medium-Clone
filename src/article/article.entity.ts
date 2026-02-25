@@ -36,5 +36,5 @@ export class ArticleEntity {
     }
 
     @ManyToOne(() => UserEntity, user => user.articles)
-    author: UserEntity
+    author: UserEntity 
 }
