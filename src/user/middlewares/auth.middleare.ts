@@ -5,13 +5,11 @@ import type {Response, NextFunction} from "express"
 import { verify } from "jsonwebtoken";
 import { UserService } from "../user.service";
 
-
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
     constructor(private readonly userService: UserService){}
 
-    async use(rq: ExpressRequest, _: Response,next: NextFunction){
-        console.log('authMiddleware', rq.headers)
+    async use(rq: ExpressRequest, _: Response, next: NextFunction){
         if(!rq.headers.authorization) {
             rq.user = null
             next()

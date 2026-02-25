@@ -3,11 +3,12 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { UserResponse } from "@app/user/types/userResponse.interface";
 import { LoginUserDto } from "./dto/loginUser.dto";
-import type { ExpressRequest } from "@app/types/expressRequest.interface";
+import { UserEntity } from "./user.entity";
+import { User } from "./decorators/user.decorator";
 
 @Controller('users')
 export class UserController{
-    
+
     constructor(private readonly userService: UserService){}
 
     @Post()
@@ -29,10 +30,8 @@ export class UserController{
     }
 
     @Get('user')
-    async currentUser(
-        @Req() rq: ExpressRequest
-    ): Promise<UserResponse>{
-        console.log('current user in controller', rq.user)
-        return 'currentUser' as any
+    async currentUser(@User() user: UserEntity): Promise<UserResponse|null> {
+        return this.userService.buildUserResponse(user)
+        
     }
 }

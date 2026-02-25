@@ -75,7 +75,9 @@ export class UserService{
         }, JWT_SECRET)
     }
 
-    buildUserResponse(user: UserEntity): UserResponse {
+    buildUserResponse(
+        user: UserEntity
+    ): UserResponse {
         const {password, ...res} = user
         return {
             user: {
