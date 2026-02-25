@@ -3,6 +3,8 @@ import { TagEntity } from "@app/tag/tag.entity"
 import { UserEntity } from "@app/user/user.entity"
 import {CreateUsers1771949121862 as CreateUsers} from "@app/migrations/1771949121862-CreateUsers"
 import {AddUsernameToUsers1771958555670 as AddUsernameToUsers} from "@app/migrations/1771958555670-AddUsernameToUsers"
+import {CreateArticles1772055023756 as CreateArticles} from '@app/migrations/1772055023756-CreateArticles'
+import { ArticleEntity } from "@app/article/article.entity"
 
 const config: PostgresConnectionOptions = {
     type: "postgres",
@@ -11,9 +13,9 @@ const config: PostgresConnectionOptions = {
     username: "user",
     password: "password",
     database: "db",
-    entities: [TagEntity, UserEntity],
+    entities: [TagEntity, UserEntity, ArticleEntity],
     synchronize: false,
-    migrations: [CreateUsers, AddUsernameToUsers]
+    migrations: [CreateUsers, AddUsernameToUsers, CreateArticles]
 }
 
 export default config
