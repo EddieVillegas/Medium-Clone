@@ -61,4 +61,16 @@ export class ArticleService {
         if(article.author.id !== currentUserId) throw new HttpException('You are not an author', HttpStatus.FORBIDDEN)
         return this.articleRepo.delete({ slug: article.slug })
     }
+
+    async updateArticle(
+        slug: string,
+        updateArticle: CreateArticleDto,
+        currentUserId: number,
+    ){
+        const article = await this.findBySlug(slug)
+        if(!article) throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND)
+        if(article.author.id !== currentUserId) throw new HttpException('You are not an author', HttpStatus.FORBIDDEN)
+        Object.assign(article, updateArticle)
+        return this.articleRepo.save(article)
+    }
 }
