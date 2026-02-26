@@ -39,4 +39,14 @@ export class ArticleService {
             ((Math.random() * Math.pow(36,6)) | 0).toString()
         )
     }
+
+    findBySlug(
+        slug: string
+    ): Promise<ArticleEntity | null> {
+        return this.articleRepo.findOne({
+            where: {
+                slug
+            }
+        })
+    }
 }
