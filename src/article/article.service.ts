@@ -4,7 +4,7 @@ import { ArticleEntity } from "./article.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "@app/user/user.entity";
-import { ArticleRespose } from "./types/articleResponse.interface";
+import { ArticleResponse, ArticlesResponse } from "./types/articleResponse.interface";
 import slugify from "slugify";
 import { DeleteResult } from "typeorm/browser";
 
@@ -13,7 +13,10 @@ export class ArticleService {
 
     constructor(
         @InjectRepository(ArticleEntity)
-        private readonly articleRepo: Repository<ArticleEntity>   
+        private readonly articleRepo: Repository<ArticleEntity>,
+
+        @InjectRepository(UserEntity)
+        private readonly userRepo: Repository<UserEntity>
     ){}
 
     async createAricle(
@@ -30,7 +33,7 @@ export class ArticleService {
 
     buildArticleResponse(
         article: ArticleEntity
-    ): ArticleRespose {
+    ): ArticleResponse {
         return {article}
     }
 
@@ -72,5 +75,45 @@ export class ArticleService {
         if(article.author.id !== currentUserId) throw new HttpException('You are not an author', HttpStatus.FORBIDDEN)
         Object.assign(article, updateArticle)
         return this.articleRepo.save(article)
+    }
+
+    async findAll(
+        currentUserId: number,
+        q: any
+    ): Promise<ArticlesResponse>{
+        const queryBuilder = await this.articleRepo
+            .createQueryBuilder('articles')
+            .leftJoinAndSelect('articles.author', 'author ')
+            .orderBy('articles.author', 'ASC')
+
+        if(q.tag){
+            queryBuilder.andWhere('articles.tagList LIKE :tag', {
+                tag: `%${q.tag}`
+            })
+        }
+
+        if(q.author){
+            const author = await this.userRepo.findOne({
+                where: {
+                    username: q.author
+                }
+            })
+            queryBuilder.andWhere('articles.authorId = :id', {
+                id:  author?.id
+            })
+        }
+
+        if(q.limit){
+            queryBuilder.limit(q.limit)
+        }
+
+        if(q.offset){
+            queryBuilder.offset(q.offset)
+        }
+
+        const articles = await queryBuilder.getMany()
+        const articlesCount = await queryBuilder.getCount()
+
+        return {articles, articlesCount}
     }
 }

@@ -1,5 +1,10 @@
 import { ArticleEntity } from "../article.entity";
 
-export interface ArticleRespose {
+export interface ArticleResponse {
     article: ArticleEntity
+}
+
+export interface ArticlesResponse {
+    articles: ArticleEntity[]
+    articlesCount: number
 }
