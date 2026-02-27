@@ -6,6 +6,8 @@ import {AddUsernameToUsers1771958555670 as AddUsernameToUsers} from "@app/migrat
 import {CreateArticles1772055023756 as CreateArticles} from '@app/migrations/1772055023756-CreateArticles'
 import { ArticleEntity } from "@app/article/article.entity"
 import { AddRelationsBetweenArticleAndUser1772057855827 as AddRelationBetweenArticleAndUser } from '@app/migrations/1772057855827-AddRelationsBetweenArticleAndUser'
+import {CreateFollows1772169004387  as CreateFollows} from "@app/migrations/1772169004387-CreateFollows"
+import { FollowEntity } from "@app/profile/follow.entity"
 
 const config: PostgresConnectionOptions = {
     type: "postgres",
@@ -14,9 +16,20 @@ const config: PostgresConnectionOptions = {
     username: "user",
     password: "password",
     database: "db",
-    entities: [TagEntity, UserEntity, ArticleEntity],
+    entities: [
+        TagEntity, 
+        UserEntity, 
+        ArticleEntity,
+        FollowEntity,
+    ],
     synchronize: false,
-    migrations: [CreateUsers, AddUsernameToUsers, CreateArticles, AddRelationBetweenArticleAndUser]
+    migrations: [
+        CreateUsers, 
+        AddUsernameToUsers, 
+        CreateArticles, 
+        AddRelationBetweenArticleAndUser,
+        CreateFollows,
+    ]
 }
 
 export default config

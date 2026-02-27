@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { hash } from 'bcrypt'
 import { ArticleEntity } from "@app/article/article.entity";
+import { IsAlphanumeric } from "class-validator";
 
 @Entity({name: 'users'})
 export class UserEntity {
