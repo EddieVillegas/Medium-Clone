@@ -1,0 +1,23 @@
+import { Controller, Get, Param } from "@nestjs/common";
+import { User } from "@app/user/decorators/user.decorator";
+import { ProfileResponse } from "./type/profile.response";
+import { ProfileService } from "./profile.service";
+
+@Controller('profiles')
+export class ProfileController {
+    constructor(
+        private readonly profileService: ProfileService
+    ){}
+
+    @Get(':username')
+    async getProfile(
+        @User('id') currentUserId: number,
+        @Param('username') profileUsername: string
+    ): Promise<ProfileResponse>{
+        const profile = await this.profileService.getProfile(
+            currentUserId,
+            profileUsername
+        )
+        return this.profileService.builProfileResponse(profile)
+    }
+}
